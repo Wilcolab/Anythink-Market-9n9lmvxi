@@ -2,45 +2,54 @@
 
 This project now uses a Node.js server (Express) that replaces the previous Python/FastAPI implementation. The new server preserves the same public API for task management while updating the runtime and build artifacts.
 
-## Project Structure
+# Node.js Server (Express) — Migration from Python/FastAPI
 
-- `node-server/src/index.js`: Main Express server that exposes the task routes.
-- `node-server/src/routes/tasks.js`: Route handlers for creating and retrieving tasks.
-- `node-server/package.json`: Node.js dependencies and start scripts.
-- `node-server/.env` (optional): Environment variables (e.g., PORT).
-- `node-server/Dockerfile`: Docker image definition for the Node.js server.
-- `docker-compose.yml`: Updated compose file to run the Node.js service (and any other services).
-- (previous python-server/*) - retained for history but no longer the active server.
+This repository has been migrated from a small FastAPI Python app to a lightweight Node.js Express server. The Express server implements the same task-list routes that were previously in `python-server/src/main.py`.
+
+## Project Structure (high level)
+
+- `express-js-server/`: The migrated Node.js/Express server.
+  - `express-js-server/src/index.js`: Main Express app containing the routes.
+  - `express-js-server/package.json`: Scripts and dependencies (`express`, `nodemon`).
+- `python-server/`: The original FastAPI implementation (kept for reference during migration).
+- `docker-compose.yml`: Orchestrates services for local development.
 
 ## Getting Started
 
-To run the Node.js server with Docker:
+To build and run the services via Docker Compose (recommended):
 
-- Build and start the services:
+```bash
+docker compose up
+```
 
-  ```shell
-  docker compose up
-  ```
+The migrated Express server listens on port `8001` by default (mapped by the `docker-compose.yml` service). You can also run the Node server directly for development:
 
-  The Node.js server listens on port `8000` (configurable via `PORT` env).
+```bash
+cd express-js-server
+npm install
+npm start
+```
 
-To run locally without Docker:
-
-- From the workspace root:
-
-  ```shell
-  cd node-server
-  npm install
-  npm start
-  ```
-
-  The server will start on the port configured in `.env` or `PORT` (default: 8000).
+This starts the server with `nodemon` and it will print a message such as `Express server listening on port 8001`.
 
 ## API Routes
 
-The server provides the same API surface as before:
+- `GET /` — Root route. Returns `Hello World`.
+- `GET /tasks` — Returns the task list as JSON: `{ "tasks": [ ... ] }`.
+- `POST /tasks` — Add a task. Request JSON body should be `{ "text": "your task" }`.
+  - Example request:
 
-- `POST /tasks`  
+```json
+{ "text": "Write a diary entry from the future" }
+```
+
+  - Validation: the server checks that `text` is a non-empty string and returns a `400` error on invalid payloads.
+
+## Migration note
+
+The application routes and in-memory `tasks` array were migrated from `python-server/src/main.py` to `express-js-server/src/index.js`. The behavior is intentionally equivalent: `GET /tasks` returns the current list and `POST /tasks` appends the provided task text.
+
+If you want me to also update the `docker-compose.yml` or remove the old Python service, tell me which behavior you prefer and I'll make the change.
   Adds a task to the task list. Request body (JSON):
 
   ```json
