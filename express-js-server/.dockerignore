@@ -1,9 +1,0 @@
-node_modules
-npm-debug.log
-Dockerfile
-.dockerignore
-.gitignore
-yarn.lock
-README.md
-src/index.js
-nodemon.json
